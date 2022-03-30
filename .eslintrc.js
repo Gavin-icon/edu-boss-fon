@@ -4,6 +4,7 @@ module.exports = {
     node: true
   },
   extends: [
+    //vue 官方提供的插件--检查代码规范
     'plugin:vue/essential',
     '@vue/standard'
   ],
