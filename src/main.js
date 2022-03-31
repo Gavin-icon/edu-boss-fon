@@ -7,7 +7,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 //  引入element的主题文件/分格
 // import 'element-ui/lib/theme-chalk/index.css'
-//  引入修改后的element主题文件
+//  引入修改后的element主题文件--该文件内部包含了一些设置在index.scss中的基础设置
 import './styles/index.scss'
 //  将 Element 注册为 Vue插件
 Vue.use(ElementUI)

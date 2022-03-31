@@ -6,4 +6,6 @@
 export default {
   name: 'MenuIndex'
 }
-</script><style lang="sass" scoped></style>
+</script>
+
+<style lang="scss" scoped></style>

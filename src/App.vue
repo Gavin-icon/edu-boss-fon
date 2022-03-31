@@ -1,10 +1,23 @@
 <template>
   <div id="app">
-    <h1>拉勾教育</h1>
     <!--根路由出口-->
     <router-view/>
   </div>
 </template>
+
+<script>
+//  封装了axios于request中
+// import request from '@/utils/request'
+
+// request({
+//   mehtod: 'GET',
+//   // url: '/front/ad/getAdList'
+//   url: '/boss/v2/api-docs?group=edu-boss-boot'
+// }).then(res => console.log(res))
+export default {
+
+}
+</script>
 
 <style lang="scss">
   //scss引入时，~是必须的。 @/ 表示 src/  --这是webpack的别名
