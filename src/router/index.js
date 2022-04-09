@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '@/store'
+import store from '../store'
+import { Message } from 'element-ui'
+// import store from '@/store'
+
 //  引入路由中需要使用的组件功能
 // import Login from '@/views/login/index.vue'
 // import Layout from '@/views/layout/index.vue'
@@ -70,6 +73,50 @@ const routes = [
         path: '/advert-space',
         name: 'advert-space',
         component: () => import(/* webpackChunkName: 'advert-space' */'@/views/advert-space/index.vue')
+      },
+      //  菜单创建 的路由组件
+      {
+        path: '/menu/create',
+        name: 'menu-create',
+        component: () => import(/* webpackChunkName: 'menu-create' */'@/views/menu/menuCreate.vue')
+      },
+      // 编辑的路由组件
+      {
+        path: '/menu/:id/edit',
+        name: 'menu-edit',
+        component: () => import(/* webpackChunkName: 'menu-edit */'@/views/menu/menuEdit.vue')
+      },
+      //  资源列表的 资源分类组件
+      {
+        path: '/resourcesCategory',
+        name: 'resourceCategory',
+        component: () => import(/* webpackChunkName: 'resourceCategory' */'@/views/resource/resourceCategory.vue')
+      },
+      //  分配菜单 动态组件
+      {
+        path: '/role/:roleId/allocMenu',
+        name: 'allocMenu',
+        component: () => import(/* webpackChunkName: 'allocMenu' */'@/views/role/allocMenu.vue'),
+        props: true
+      },
+      // 分配资源 动态组件
+      {
+        path: '/role/:roleId/allocResource',
+        name: 'allocResource',
+        component: () => import(/* webpackChunkName: 'allocResource' */'@/views/role/allocResource.vue'),
+        props: true
+      },
+      // 课程 创建 组件
+      {
+        path: '/course/create',
+        name: 'createCourse',
+        component: () => import(/* webpackChunkName: 'createCourse' */'@/views/course/createCourse.vue')
+      },
+      // 课程 编辑 组件
+      {
+        path: '/course/:id/edit',
+        name: 'editCourse',
+        component: () => import(/* webpackChunkName: 'editCourse' */'@/views/course/editCourse.vue')
       }
     ]
   },
@@ -85,21 +132,38 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  // console.log(to)
   //  只要to的任意一条路由的requiresAuth为true，我们就返回TRUE
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log('需要认证')
-    //  验证 Vuex的 store中的登录用户存储信息是否存在,user中获取本地数据/null
+    // console.log('当前页面需要验证')
+    // 验证登录信息是否存在 --不存在的话
     if (!store.state.user) {
-      //  未登录，则跳转到登录页面
-      // next('/login')
-      next({ name: 'login' })
-    } else {
-      //  登录，返回上次浏览的页面
-      next({ name: '' })
+      return next(
+        {
+          name: 'login',
+          query: {
+            // 将本次路由的fullPath传递给login页面，在login页面通过跳转到 this.$route.query.redirect
+            redirect: to.fullPath
+          }
+        })
     }
-  } else {
-    console.log('不需要认证')
     next()
+  } else {
+    // console.log('当前页面不需要验证')
+    next()
+  }
+})
+router.onError((error) => {
+  const pattern = /Loading chunk chunk-(.*)+ failed/g
+  const isChunkLoadFailed = error.message.match(pattern)
+  if (isChunkLoadFailed) {
+    Message({
+      message: '系统已升级，正在刷新本地存储，请稍候...',
+      type: 'warning',
+      duration: 1500,
+      offset: 60
+    })
+    location.reload()
   }
 })
 export default router

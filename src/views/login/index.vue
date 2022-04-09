@@ -48,56 +48,31 @@ export default {
     }
   },
   methods: {
-    //  登录功能
-    // onSubmit () {
-    //   this.$refs.form.validate( validate => { console.log(validate) } )
-    // }
     async onSubmit () {
-      // this.$store.commit('add1', 10)
-      // this.$store.commit({
-      //   type: 'add',
-      //   data1: 100
-      // })
-      // this.$store.commit('add2', {
-      //   count: 5,
-      //   delay: 2000
-      // })
-      // this.$store.commit('add2', {
-      //   count: 2,
-      //   delay: 1000
-      // })
-      // this.$store.commit('add2', {
-      //   count: 1,
-      //   delay: 500
-      // })
-      // this.$store.dispatch('add3Handle', { count: 5, delay: 2000 })
-      // this.$store.dispatch('add3Handle', { count: 2, delay: 1000 })
-      // this.$store.dispatch('add3Handle', { count: 1, delay: 500 })
-
       //  使用 async 与 await
       try {
         //  设置校验
         await this.$refs.form.validate()
         this.ifLoginLoading = true
-        //  发送请求
+        //  发送请求,通过解构获取返回的data数据
         const { data } = await login(this.form)
         console.log('通过校验', data)
         this.ifLoginLoading = false
         //  响应处理
         if (data.state === 1) {
-          this.$router.push({
-            name: 'home'
-          })
-          // this.$router.push('/')
           this.$message.success('登录成功')
           //  登录成功后将用户信息存储到Vuex中
           this.$store.commit('setUser', {
             data: data.content
           })
+          //  信息存储后跳转,根据redirect数据进行跳转设置
+          this.$router.push(this.$route.query.redirect || '/')
+          // this.$router.push('/')
         } else {
           this.$message.error(data.message)
         }
       } catch (err) {
+        this.ifLoginLoading = false
         console.log('未通过校验')
       }
     }
