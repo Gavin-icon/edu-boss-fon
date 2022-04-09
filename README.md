@@ -106,6 +106,9 @@ meta.requiresAuth指的是Vuex登录路由验证，如果存在则说明需要�
 --->点击编辑时请求的数据是异步的，而富文本编辑器的函数是同步的，所以展示的是data的默认值；-解决方案：通过watch监听器监听value的变化，内部手动设置富文本编辑器的内容，且只能是首次编辑是调用watch监听器内部的函数。
 (2)根据id传递的数据中，courseDescriptionMarkDown始终无值？？  ---> 编辑页面的判断应该在created钩子中，而不是methods中判断。
 
+25. tree组件中(1)如何添加自定义按钮？ 根据官方文档有render-content和scope slot两种方法，其中样式控制时需要：{display：flex; flex:1; justify-content: 'space-between'; align-item: 'center' + height: auto}
+(2)关于拖拽：使用elementui提供的方法allow-drop=回调函数，接受三个参数draggingNode,dropNode,type；draggingNode.data.selectId与dropNode.data.selectId一致且没有拖拽出该级[type!==inner]时可以拖拽，返回值是boolean
+
 12.【resource中控制添加资源和编辑资源】子组件如何在不使用$emit时向父组件传参？
 
 13.【resource中控制添加资源和编辑资源】父组件即便接受到了子组件的值来控制显示，但是隐藏又如何实现呢？

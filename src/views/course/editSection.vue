@@ -11,15 +11,18 @@
     </div>
     <el-card class="box-card" style="margin-top: 15px;">
       <el-tree :data="sections"
+               v-loading="isLoading"
                draggable
                :props="defaultProps"
+               :allow-drop="isAllowDrag"
+               @node-drop="dropedSuccess"
                @node-click="handleNodeClick">
                 <!-- 第一个是节点数据， 第二个是传入的数据data -->
                 <div class="inner" slot-scope="{ node, data }">
                   <!-- 内容设置 -->
                   <span>{{ node.label }}</span>
                   <!-- 后续按钮设置
-                    一级菜单名称是data.sectionName, 二级菜单名称是data.theme
+                    一级菜单名称是data.sectionName, 二级菜单名称是data..theme
                     如果是一级菜单展示 --编辑、添加课时、状态
                     如果是二级菜单展示 --编辑、上传视频、状态
                    -->
@@ -40,7 +43,7 @@
 </template>
 
 <script>
-import { getSectionAndLesson } from '@/services/course-section'
+import { getSectionAndLesson, saveOrUpdateSection, saveOrUpdateLesson } from '@/services/course-section'
 import { getCourseInfoById } from '@/services/course'
 export default {
   name: 'EditSection',
@@ -52,6 +55,7 @@ export default {
   },
   data () {
     return {
+      isLoading: false,
       editName: '',
       sections: [],
       defaultProps: {
@@ -69,6 +73,58 @@ export default {
     this.loadCourseInfoById()
   },
   methods: {
+    // 拖拽成功后的回调，向服务端发送数据
+    async dropedSuccess (draggingNode, dropNode, type, event) {
+      console.log(dropNode, draggingNode)
+      this.isLoading = true
+      // 如果课时或者章节过多，会导致大量同步任务出现，我们可以使用promise.all()方法让他们全部执行完再进入同步任务
+      try {
+        await Promise.all(dropNode.parent.childNodes.map((item, index) => {
+          // item指的是子节点本身，index指的是索引
+          if (draggingNode.data.sectionId) {
+            // 课时 拖拽
+            return saveOrUpdateLesson({
+              id: item.data.id,
+              orderNum: index
+            })
+          } else {
+            return saveOrUpdateSection({
+              id: item.data.id,
+              orderNum: index
+            })
+          }
+        }))
+        this.$message.success('数据更新成功')
+      } catch (error) {
+        this.$message.error('数据更新失败', error)
+      }
+      this.isLoading = false
+
+      // 拖拽结束释放时获取其中父节点内部包含的顺序
+      // dropNode.parent.childNodes.map(async (item, index) => {
+      //   console.log(item, index)
+      //   // 通过判断谁被拖拽来绝对发送哪个请求 拖放者有没有属性比如：sectionId / lessonDTOS
+      //   if (draggingNode.data.sectionId) {
+      //     // 说明是课时的拖拽
+      //     await saveOrUpdateLesson({
+      //       id: item.data.id,
+      //       orderNum: index
+      //     })
+      //   } else {
+      //     // 说明是章节的拖拽
+      //     await saveOrUpdateSection({
+      //       id: item.data.id,
+      //       orderNum: index
+      //     })
+      //   }
+      // })
+    },
+    // 拖放判定是否允许, 不允许随意拖拽
+    isAllowDrag (draggingNode, dropNode, type) {
+      // 只能同级移动 ，type不能为 inner
+      return type !== 'inner' && draggingNode.data.sectionId === dropNode.data.sectionId
+    },
+    // 为了显示标题
     async loadCourseInfoById () {
       const { data } = await getCourseInfoById(this.courseId)
       if (data.code === '000000') {
