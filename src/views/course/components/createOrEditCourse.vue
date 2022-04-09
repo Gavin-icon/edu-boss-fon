@@ -160,8 +160,8 @@
           <el-button type="primary" @click="activeStep++" style="margin-left: 20px;">下一步</el-button>
         </div>
         <div v-show="activeStep === 4">
-          <el-form-item label-width="0">
-            <div ref="editor"></div>
+          <el-form-item label="课程详情">
+            <text-editor v-model="form.courseDescriptionMarkDown"></text-editor>
           </el-form-item>
           <el-form-item label="是否上架">
             <el-switch
@@ -182,17 +182,22 @@
 <script>
 import CourseImage from './courseImage'
 import { saveOrUpdateCourse, getCourseInfoById } from '@/services/course'
-import E from 'wangeditor'
+import TextEditor from '@/components/TextEditor'
 export default {
   name: 'CreateOrEditCourse',
   props: {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    courseId: {
+      type: [Number, String],
+      required: true
     }
   },
   components: {
-    CourseImage
+    CourseImage,
+    TextEditor
   },
   data () {
     return {
@@ -242,12 +247,12 @@ export default {
         // 上架状态 0 下架 1 上架
         status: 0,
         // 课程描述 详细[富文本]
-        courseDescriptionMarkDown: '',
+        courseDescriptionMarkDown: '<h3>默认内容</h3>',
         // 课程排序
         sortNum: '',
         // 秒杀信息展示开关
         activityCourse: false,
-        // ，秒杀活动信息
+        // 秒杀活动信息
         activityCourseDTO: {
           // 开始时间
           beginTime: '',
@@ -282,28 +287,33 @@ export default {
     }
   },
   created () {
-    this.loadCourseInfoById()
-  },
-  mounted () {
-    // 富文本编辑器初始化
-    this.initEditor()
+    // 判断是否处于编辑页面
+    if (this.isEdit) {
+      this.loadCourseInfoById()
+    }
   },
   methods: {
-    initEditor () {
-      const edit = new E(this.$refs.editor)
-      edit.create()
-    },
     // 根据Id加载课程信息
     async loadCourseInfoById () {
-      // 判断是否处于编辑页面
-      if (this.isEdit) {
-        // 渲染编辑页面的数据
-        const { data } = await getCourseInfoById(this.$route.params.id)
-        console.log(data)
-        if (data.code === '000000') {
-          this.editCoourseName = data.data.courseName
-          this.form = data.data
+      // 渲染编辑页面的数据
+      const { data } = await getCourseInfoById(this.courseId)
+      console.log(data)
+      if (data.code === '000000') {
+        // 判断是否开启秒杀，没有的话将秒杀数据初始化
+        if (!data.data.activityCourse) {
+          data.data.activityCourseDTO = {
+            // 开始时间
+            beginTime: '',
+            // 结束时间
+            endTime: '',
+            // 活动价格
+            amount: '',
+            // 库存值
+            stock: ''
+          }
         }
+        this.editCoourseName = data.data.courseName
+        this.form = data.data
       }
     },
     // 回退
@@ -315,6 +325,7 @@ export default {
       try {
         await this.$refs.form.validate()
         const { data } = await saveOrUpdateCourse(this.form)
+        console.log(data)
         if (data.code === '000000') {
           if (this.isEdit) {
             this.$message.success('编辑成功')

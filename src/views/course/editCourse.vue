@@ -1,6 +1,6 @@
 <template>
   <div class="edit-course">
-    <create-or-edit-course :isEdit="true"></create-or-edit-course>
+    <create-or-edit-course :isEdit="true" :courseId="courseId"></create-or-edit-course>
   </div>
 </template>
 
@@ -8,6 +8,12 @@
 import CreateOrEditCourse from './components/createOrEditCourse'
 export default {
   name: 'EditCourse',
+  props: {
+    courseId: {
+      type: [String, Number],
+      required: true
+    }
+  },
   components: {
     CreateOrEditCourse
   }

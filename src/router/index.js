@@ -114,9 +114,17 @@ const routes = [
       },
       // 课程 编辑 组件
       {
-        path: '/course/:id/edit',
+        path: '/course/:courseId/edit',
         name: 'editCourse',
-        component: () => import(/* webpackChunkName: 'editCourse' */'@/views/course/editCourse.vue')
+        component: () => import(/* webpackChunkName: 'editCourse' */'@/views/course/editCourse.vue'),
+        props: true
+      },
+      // 课程 内容 组件
+      {
+        path: '/course/:courseId/section',
+        name: 'editSection',
+        component: () => import(/* webpackChunkName: 'editCourse' */'@/views/course/editSection.vue'),
+        props: true
       }
     ]
   },

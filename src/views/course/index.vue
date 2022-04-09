@@ -134,10 +134,10 @@ export default {
       this.$router.push({ name: 'createCourse' })
     },
     handleEdit (editIndex) {
-      this.$router.push({ name: 'editCourse', params: { id: editIndex.id } })
+      this.$router.push({ name: 'editCourse', params: { courseId: editIndex.id } })
     },
     handleContent (contentIndex) {
-
+      this.$router.push({ name: 'editSection', params: { courseId: contentIndex.id } })
     },
     handleSizeChange (val) {
       // console.log(`每页 ${val} 条`)
