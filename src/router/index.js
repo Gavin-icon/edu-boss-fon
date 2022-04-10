@@ -125,6 +125,13 @@ const routes = [
         name: 'editSection',
         component: () => import(/* webpackChunkName: 'editCourse' */'@/views/course/editSection.vue'),
         props: true
+      },
+      // 视频上传 组件
+      {
+        path: '/course/:courseId/vedio',
+        name: 'course-video',
+        component: () => import(/* webpackChunkName: 'course-video' */'@/views/course/courseVideo'),
+        props: true
       }
     ]
   },

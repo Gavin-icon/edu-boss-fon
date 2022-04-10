@@ -33,7 +33,7 @@
                   </span>
                   <span v-else class="actions">
                     <el-button>编辑</el-button>
-                    <el-button type="primary">上传视频</el-button>
+                    <el-button type="primary" @click="$router.push({ name: 'course-video', params: { courseId }, query: { lessonId: data.id } })">上传视频</el-button>
                     <el-button>状态</el-button>
                   </span>
                 </div>
@@ -88,6 +88,7 @@ export default {
               orderNum: index
             })
           } else {
+            // 通过return 返回一个promise对象
             return saveOrUpdateSection({
               id: item.data.id,
               orderNum: index

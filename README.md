@@ -109,6 +109,8 @@ meta.requiresAuth指的是Vuex登录路由验证，如果存在则说明需要�
 25. tree组件中(1)如何添加自定义按钮？ 根据官方文档有render-content和scope slot两种方法，其中样式控制时需要：{display：flex; flex:1; justify-content: 'space-between'; align-item: 'center' + height: auto}
 (2)关于拖拽：使用elementui提供的方法allow-drop=回调函数，接受三个参数draggingNode,dropNode,type；draggingNode.data.selectId与dropNode.data.selectId一致且没有拖拽出该级[type!==inner]时可以拖拽，返回值是boolean
 
+26.阿里云视频上传操作步骤：(1)实例化一个阿里云实例：var uploader = new AliyunUpload.Vod({})，详情见文档; (2)点击上传按钮进行操作：获取到上传的图片或视频文件$refs-files-数组文件；(3)利用实例的uploader进行addFile方法添加需要上传的文件；(4)通过调用uploader的方法startUpload()进行上传==》实际上只是进入了实例上传的一个方法中，还须在该方法中配置接口获取上传凭证；(5)获取上传凭证后通过uploader的方法setUploadAuthAndAddress()上传，包含四个参数：uploadInfo | 上传凭证 | 上传凭证地址 | 视频或图片id ==》上传进度开启；(6)解码操作：根据接口进行解码请求，再根据接口获取解码进度[此时需要开启定时器获取解码进度，直到成功!] (7)html提示进度;
+
 12.【resource中控制添加资源和编辑资源】子组件如何在不使用$emit时向父组件传参？
 
 13.【resource中控制添加资源和编辑资源】父组件即便接受到了子组件的值来控制显示，但是隐藏又如何实现呢？
