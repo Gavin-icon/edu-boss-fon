@@ -35,7 +35,7 @@
                   <span v-else class="actions">
                     <el-button @click.stop="editLesson(data.id)" size="small">编辑</el-button>
                     <el-button type="primary" @click="$router.push({ name: 'course-video', params: { courseId }, query: { lessonId: data.id } })" size="small">上传视频</el-button>
-                    <el-button size="small">{{ data.status === 0 ? '已隐藏' : data.status === 1 ? '待更新' : '已更新' }}</el-button>
+                    <el-button @click.stop="capterStatusLesson(data.id)" size="small">{{ data.status === 0 ? '已隐藏' : data.status === 1 ? '待更新' : '已更新' }}</el-button>
                   </span>
                 </div>
                </el-tree>
@@ -67,6 +67,20 @@
         :courseName="editName"
       ></capter-status>
     </el-dialog>
+    <!-- 课时信息之status -->
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisibleStatusLesson"
+      width="30%">
+      <capter-status-lesson
+        v-if="dialogVisibleStatusLesson"
+        @success="handleSuccessStatusLesson"
+        @cancel="handleCancelStatusLesson"
+        :lessonId="lessonId"
+        :courseId="courseId"
+        :courseName="editName"
+      ></capter-status-lesson>
+    </el-dialog>
     <!-- 添加和编辑课时组件 -->
     <el-dialog title="课时基本信息" :visible.sync="dialogFormVisibleLesson">
       <add-or-edit-lesson
@@ -86,6 +100,7 @@
 <script>
 import AddOrEditSection from './components/addOrEditSection.vue'
 import CapterStatus from './components/capterStatus.vue'
+import CapterStatusLesson from './components/capterStatusLesson.vue'
 import AddOrEditLesson from './components/addOrEditLesson.vue'
 import { getSectionAndLesson, saveOrUpdateSection, saveOrUpdateLesson } from '@/services/course-section'
 import { getCourseInfoById } from '@/services/course'
@@ -112,6 +127,7 @@ export default {
       },
       dialogFormVisible: false,
       dialogVisibleStatus: false,
+      dialogVisibleStatusLesson: false,
       dialogFormVisibleLesson: false,
       isEdit: '',
       isEditLesson: '',
@@ -123,7 +139,8 @@ export default {
   components: {
     AddOrEditSection,
     CapterStatus,
-    AddOrEditLesson
+    AddOrEditLesson,
+    CapterStatusLesson
   },
   created () {
     this.loadSectionAndLesson()
@@ -219,6 +236,11 @@ export default {
       this.dialogVisibleStatus = true
       this.sectionId = id
     },
+    // 课时状态
+    capterStatusLesson (id) {
+      this.dialogVisibleStatusLesson = true
+      this.lessonId = id
+    },
     // 添加章节
     addSection () {
       this.isEdit = false
@@ -253,6 +275,14 @@ export default {
     },
     handleCancelLesson () {
       this.dialogFormVisibleLesson = false
+    },
+    // 处理子组件传递过来的数据--课时状态
+    handleSuccessStatusLesson () {
+      this.dialogVisibleStatusLesson = false
+      this.loadSectionAndLesson()
+    },
+    handleCancelStatusLesson () {
+      this.dialogVisibleStatusLesson = false
     },
     // node-click
     handleNodeClick () {}

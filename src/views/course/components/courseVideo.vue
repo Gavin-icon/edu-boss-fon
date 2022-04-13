@@ -2,13 +2,15 @@
   <div class="course-video">
     <el-card class="box-card">
       <div slot="header">课程相关信息</div>
-      <el-form label-width="80px">
+      <el-form label-width="80px" v-model="form">
         <el-form-item label="课程">
           <el-input disabled
+                    v-model="form.courseName"
                     style="width: 500px"></el-input>
         </el-form-item>
         <el-form-item label="课时">
           <el-input disabled
+                    v-model="form.lessonName"
                     style="width: 500px"></el-input>
         </el-form-item>
         <el-form-item label="视频上传">
@@ -32,6 +34,8 @@
 <script>
 // eslint-disable-next-line
 import { aliyunImageUploadAddressAndAuth, aliyunVideoUploadAddressAndAuth, aliyunTransCode, getAliyunTransCodePercent } from '@/services/aliyun-upload'
+import { getLessonById } from '@/services/course-section'
+import { getCourseInfoById } from '@/services/course'
 export default {
   name: 'CourseVideo',
   props: {
@@ -42,6 +46,10 @@ export default {
   },
   data () {
     return {
+      form: {
+        courseName: '',
+        lessonName: ''
+      },
       // 图片上传后的地址，用于视频上传请求
       imageURL: '',
       // 保存上传实例
@@ -59,8 +67,24 @@ export default {
   },
   created () {
     this.initUploader()
+    this.loadLessonById()
+    this.loadCourseInfoById()
   },
   methods: {
+    async loadLessonById () {
+      const { data } = await getLessonById(this.$route.query.lessonId)
+      if (data.code === '000000') {
+        // console.log(data)
+        this.form.lessonName = data.data.theme
+      }
+    },
+    async loadCourseInfoById () {
+      const { data } = await getCourseInfoById(this.courseId)
+      // console.log('课程信息', data)
+      if (data.code === '000000') {
+        this.form.courseName = data.data.courseName
+      }
+    },
     // 用户手动点击上传按钮时的功能
     handleUpLoad () {
       // 重置所有数据 --可能重置使用某个组件进行上传处理， 点击上传时将数据重置

@@ -115,6 +115,7 @@ export default {
     if (this.isEdit) {
       this.loadLessonById()
     }
+    this.loadChapterById()
   },
   methods: {
     // 获取课时相关信息
@@ -124,12 +125,14 @@ export default {
       if (data1.code === '000000') {
         this.ruleForm.form = data1.data
         this.ruleForm.courseName = this.editName
-        // 获取章节名称
-        const { data: data2 } = await getChapterById(this.ruleForm.form.sectionId)
-        if (data2.code === '000000') {
-          // console.log(data2)
-          this.ruleForm.sectionName = data2.data.sectionName
-        }
+      }
+    },
+    // 获取章节名称
+    async loadChapterById () {
+      const { data: data2 } = await getChapterById(this.ruleForm.form.sectionId)
+      if (data2.code === '000000') {
+        // console.log(data2)
+        this.ruleForm.sectionName = data2.data.sectionName
       }
     },
     handleCancel () {

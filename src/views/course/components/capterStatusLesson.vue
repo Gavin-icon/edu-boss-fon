@@ -27,11 +27,11 @@
 </template>
 
 <script>
-import { saveOrUpdateSection, getChapterById } from '@/services/course-section.js'
+import { saveOrUpdateLesson, getLessonById } from '@/services/course-section.js'
 export default {
   name: 'CapterStatus',
   props: {
-    sectionId: {
+    lessonId: {
       type: Number
     },
     courseId: {
@@ -49,13 +49,13 @@ export default {
     }
   },
   created () {
-    this.loadCapterById()
+    this.loadLessonById()
   },
   methods: {
     // 获取章节信息中的状态
-    loadCapterById () {
-      console.log(this.sectionId)
-      getChapterById(this.sectionId).then(res => {
+    loadLessonById () {
+      console.log(this.lessonId)
+      getLessonById(this.lessonId).then(res => {
         if (res.data.code === '000000') {
           console.log(res)
           this.form = res.data.data
@@ -65,7 +65,7 @@ export default {
     },
     handleSuccess () {
       this.form.status = Number(this.form.status)
-      saveOrUpdateSection(this.form).then(res => {
+      saveOrUpdateLesson(this.form).then(res => {
         console.log(res)
         if (res.data.code === '000000') {
           this.$message.success('状态修改成功')
