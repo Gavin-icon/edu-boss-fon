@@ -50,3 +50,12 @@ export const getLessonById = lessonId => {
     }
   })
 }
+
+// 保存或更新课时
+export const saveOrUpdateLessonById = data => {
+  return request({
+    method: 'POST',
+    url: '/boss/course/lesson/saveOrUpdate',
+    data
+  })
+}

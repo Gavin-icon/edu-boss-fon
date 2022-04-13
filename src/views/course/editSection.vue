@@ -29,7 +29,7 @@
                    -->
                   <span v-if="data.sectionName" class="actions">
                     <el-button @click.stop="editSection(data.id)" size="small">编辑</el-button>
-                    <el-button type="primary" @click.stop="addLesson" size="small">添加课时</el-button>
+                    <el-button type="primary" @click.stop="addLesson(data.id)" size="small">添加课时</el-button>
                     <el-button @click.stop="capterStatus(data.id)" size="small"> {{ data.status === 0 ? '已隐藏' : data.status === 1 ? '待更新' : '已更新' }} </el-button>
                   </span>
                   <span v-else class="actions">
@@ -74,6 +74,10 @@
       :isEdit="isEditLesson"
       :lessonId="lessonId"
       :editName="editName"
+      :sectionId="sectionId"
+      :courseId="courseIdd"
+      @cancel="handleCancelLesson"
+      @success="handleSuccessLesson"
       ></add-or-edit-lesson>
     </el-dialog>
   </div>
@@ -112,7 +116,8 @@ export default {
       isEdit: '',
       isEditLesson: '',
       lessonId: '',
-      sectionId: ''
+      sectionId: '',
+      courseIdd: this.courseId
     }
   },
   components: {
@@ -198,7 +203,8 @@ export default {
       this.$router.push({ name: 'course' })
     },
     // 添加课时
-    addLesson () {
+    addLesson (id) {
+      this.sectionId = id
       this.isEditLesson = false
       this.dialogFormVisibleLesson = true
     },
@@ -239,6 +245,14 @@ export default {
     },
     handleCancelStatus () {
       this.dialogVisibleStatus = false
+    },
+    // 处理子组件传递过来的数据--课时
+    handleSuccessLesson () {
+      this.dialogFormVisibleLesson = false
+      this.loadSectionAndLesson()
+    },
+    handleCancelLesson () {
+      this.dialogFormVisibleLesson = false
     },
     // node-click
     handleNodeClick () {}
