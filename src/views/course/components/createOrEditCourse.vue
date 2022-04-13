@@ -47,7 +47,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="讲师姓名"
-                        prop="teacherName">
+                        prop="teacherDTO.teacherName">
             <el-input type="text"
                       v-model="form.teacherDTO.teacherName"
                       maxlength="50"
@@ -55,7 +55,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="职位"
-                        prop="position">
+                        prop="teacherDTO.position">
             <el-input type="text"
                       v-model="form.teacherDTO.position"
                       maxlength="50"
@@ -63,7 +63,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="讲师简介"
-                        prop="description">
+                        prop="teacherDTO.description">
             <el-input type="text"
                       v-model="form.teacherDTO.description"
                       maxlength="100"
@@ -180,7 +180,7 @@
 </template>
 
 <script>
-import CourseImage from './courseImage'
+import CourseImage from '@/components/uploadImage/courseImage.vue'
 import { saveOrUpdateCourse, getCourseInfoById } from '@/services/course'
 import TextEditor from '@/components/TextEditor'
 export default {
@@ -264,6 +264,7 @@ export default {
           stock: ''
         }
       },
+      /* eslint-disable */
       rules: {
         courseName: [
           { required: true, message: '请输入课程名称', trigger: 'blur' }
@@ -271,19 +272,20 @@ export default {
         brief: [
           { required: true, message: '请输入课程简介', trigger: 'blur' }
         ],
-        // teacherName: [
-        //   { required: true, message: '请输入讲师姓名', trigger: 'blur' }
-        // ],
-        // position: [
-        //   { required: true, message: '请输入讲师职位', trigger: 'blur' }
-        // ],
-        // description: [
-        //   { required: true, message: '请输入讲师简介', trigger: 'blur' }
-        // ],
+        "teacherDTO.teacherName": [
+          { required: true, message: '请输入讲师姓名', trigger: 'blur' }
+        ],
+        "teacherDTO.position": [
+          { required: true, message: '请输入讲师职位', trigger: 'blur' }
+        ],
+        "teacherDTO.description": [
+          { required: true, message: '请输入讲师简介', trigger: 'blur' }
+        ],
         previewFirstField: [
           { required: true, message: '请输入课程概述', trigger: 'blur' }
         ]
       }
+      /* eslint-enable */
     }
   },
   created () {

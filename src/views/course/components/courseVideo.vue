@@ -21,7 +21,8 @@
           <el-button @click="handleUpLoad">开始上传</el-button>
           <el-button @click="$router.push({ name: 'editSection', params: { courseId } })">返回</el-button>
           <p v-if="upLoadPercentage">视频上传中: {{ upLoadPercentage }}</p>
-          <p v-if="isUpLoadSuccess">视频转码中: {{ isTransCode ? '完成' : '正在转码中' }}</p>
+          <p v-if="isUpLoadSuccess">视频转码中: {{ isTransCode ? '完成' : '正在转码中:' }}</p>
+          <span v-if="transcodeNum"> {{ transcodeNum }} </span>
         </el-form-item>
       </el-form>
     </el-card>
@@ -52,7 +53,8 @@ export default {
       // 上传完毕状态
       isUpLoadSuccess: false,
       // 转码状态
-      isTransCode: fasle
+      isTransCode: false,
+      transcodeNum: ''
     }
   },
   created () {
@@ -130,11 +132,12 @@ export default {
         //  文件上传成功
         onUploadSucceed: function (uploadInfo) {},
         //  文件上传失败
-        onUploadFailed: function (uploadInfo, code, message) { },
+        onUploadFailed: function (uploadInfo, code, message) {},
         //  文件上传进度，单位：字节
         onUploadProgress: (uploadInfo, totalSize, loadedPercent) => {
+          // console.log(Math.floor(loadedPercent * 100) + '%')
           if (!uploadInfo.isImage) {
-            this.upLoadPercentage = Math.floor(loadedPercent)
+            this.upLoadPercentage = Math.floor(loadedPercent * 100) + '%'
           }
         },
         //  上传凭证或STS token超时
@@ -151,12 +154,13 @@ export default {
             fileName: this.$refs['video-file'].files[0].name
           })
           if (data.code === '000000') {
-            // console.log(data)
             const timer = setInterval(async () => {
-              const { data } = getAliyunTransCodePercent(lessonId)
+              const { data } = await getAliyunTransCodePercent(lessonId)
               if (data.code === '000000') {
+                this.transcodeNum = data.data + '%'
                 if (data.data === 100) {
                   this.isTransCode = true
+                  this.transcodeNum = 0
                   this.$message.success('视频转码成功')
                   clearInterval(timer)
                 }

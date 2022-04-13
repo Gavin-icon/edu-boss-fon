@@ -69,10 +69,35 @@ const routes = [
         name: 'advert',
         component: () => import(/* webpackChunkName: 'advert' */'@/views/advert/index.vue')
       },
+      // 添加广告
+      {
+        path: '/addAdvert',
+        name: 'addAdvert',
+        component: () => import(/* webpackChunkName: 'addAdvert' */'@/views/advert/addAdvert.vue')
+      },
+      // 编辑广告
+      {
+        path: '/:id/editAdvert',
+        name: 'editAdvert',
+        component: () => import(/* webpackChunkName: 'editAdvert' */'@/views/advert/editAdvert.vue')
+      },
+      // 广告位
       {
         path: '/advert-space',
         name: 'advert-space',
         component: () => import(/* webpackChunkName: 'advert-space' */'@/views/advert-space/index.vue')
+      },
+      // 添加广告位
+      {
+        path: '/addAdvertSpace',
+        name: 'addAdvertSpace',
+        component: () => import(/* webpackChunkName: 'addAdvertSpace' */'@/views/advert-space/addAdvertSpace.vue')
+      },
+      // 编辑广告位
+      {
+        path: '/:id/editAdvertSpace',
+        name: 'editAdvertSpace',
+        component: () => import(/* webpackChunkName: 'editAdvertSpace' */'@/views/advert-space/editAdvertSpace.vue')
       },
       //  菜单创建 的路由组件
       {
@@ -130,7 +155,7 @@ const routes = [
       {
         path: '/course/:courseId/vedio',
         name: 'course-video',
-        component: () => import(/* webpackChunkName: 'course-video' */'@/views/course/courseVideo'),
+        component: () => import(/* webpackChunkName: 'course-video' */'@/views/course/components/courseVideo'),
         props: true
       }
     ]

@@ -53,22 +53,30 @@ export default {
           return this.getChecked(item.resourceList)
         }
         this.checked = [...this.checked, item.id]
+        // console.log(this.checked)  数据库中一共有51个被选中的资源
       })
     },
     async loadReSources () {
       const { data } = await roleResources(this.roleId)
       // console.log(data)
-      this.list = data.data
+      if (data.code === '000000') {
+        this.list = data.data
+      }
       this.getChecked(this.list)
     },
     handleCheckAllChange (val) {
-      this.checked = val || []
+      this.checked = val ? this.checked : []
       this.isIndeterminate = false
     },
     handleCheckedCitiesChange (value) {
-      const checkedCount = value.length - 51
-      console.log(value, checkedCount)
-      this.checkAll = checkedCount === this.checked.length
+      console.log(value)
+      const checkedCount = value.length
+      // 获取list中每一个resourceList的长度
+      const totalCount = this.list.reduce((pre, cur) => {
+        return pre + cur.resourceList.length
+      }, 0)
+      console.log(totalCount)
+      this.checkAll = checkedCount === totalCount
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.checked.length
     }
   }

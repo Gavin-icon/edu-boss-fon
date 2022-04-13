@@ -28,3 +28,25 @@ export const saveOrUpdateLesson = data => {
     data
   })
 }
+
+// 根据id获取章节内容
+export const getChapterById = sectionId => {
+  return request({
+    method: 'GET',
+    url: '/boss/course/section/getBySectionId',
+    params: {
+      sectionId
+    }
+  })
+}
+
+// 根据id获取课时内容
+export const getLessonById = lessonId => {
+  return request({
+    method: 'GET',
+    url: '/boss/course/lesson/getById',
+    params: {
+      lessonId
+    }
+  })
+}

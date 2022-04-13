@@ -7,12 +7,13 @@
       </el-page-header>
       <el-button type="primary"
                  style="float: right;"
-                 @click="onSubmit">+添加阶段</el-button>
+                 @click="addSection">+添加阶段</el-button>
     </div>
     <el-card class="box-card" style="margin-top: 15px;">
       <el-tree :data="sections"
                v-loading="isLoading"
                draggable
+               accordion
                :props="defaultProps"
                :allow-drop="isAllowDrag"
                @node-drop="dropedSuccess"
@@ -27,22 +28,61 @@
                     如果是二级菜单展示 --编辑、上传视频、状态
                    -->
                   <span v-if="data.sectionName" class="actions">
-                    <el-button>编辑</el-button>
-                    <el-button type="primary">添加课时</el-button>
-                    <el-button>状态</el-button>
+                    <el-button @click.stop="editSection(data.id)" size="small">编辑</el-button>
+                    <el-button type="primary" @click.stop="addLesson" size="small">添加课时</el-button>
+                    <el-button @click.stop="capterStatus(data.id)" size="small"> {{ data.status === 0 ? '已隐藏' : data.status === 1 ? '待更新' : '已更新' }} </el-button>
                   </span>
                   <span v-else class="actions">
-                    <el-button>编辑</el-button>
-                    <el-button type="primary" @click="$router.push({ name: 'course-video', params: { courseId }, query: { lessonId: data.id } })">上传视频</el-button>
-                    <el-button>状态</el-button>
+                    <el-button @click.stop="editLesson(data.id)" size="small">编辑</el-button>
+                    <el-button type="primary" @click="$router.push({ name: 'course-video', params: { courseId }, query: { lessonId: data.id } })" size="small">上传视频</el-button>
+                    <el-button size="small">{{ data.status === 0 ? '已隐藏' : data.status === 1 ? '待更新' : '已更新' }}</el-button>
                   </span>
                 </div>
                </el-tree>
     </el-card>
+    <!--  章节有关信息处理 -->
+    <el-dialog title="章节信息" :visible.sync="dialogFormVisible" width="50%" >
+      <add-or-edit-section
+      v-if="dialogFormVisible"
+      :dialogFormVisible="dialogFormVisible"
+      @success="handleSuccess"
+      @cancel="handleCancel"
+      :editName="editName"
+      :courseId="courseId"
+      :isEdit="isEdit"
+      :sectionId="sectionId"
+      ></add-or-edit-section>
+    </el-dialog>
+    <!-- 章节信息之status -->
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisibleStatus"
+      width="30%">
+      <capter-status
+        v-if="dialogVisibleStatus"
+        @success="handleSuccessStatus"
+        @cancel="handleCancelStatus"
+        :sectionId="sectionId"
+        :courseId="courseId"
+        :courseName="editName"
+      ></capter-status>
+    </el-dialog>
+    <!-- 添加和编辑课时组件 -->
+    <el-dialog title="课时基本信息" :visible.sync="dialogFormVisibleLesson">
+      <add-or-edit-lesson
+      v-if="dialogFormVisibleLesson"
+      :isEdit="isEditLesson"
+      :lessonId="lessonId"
+      :editName="editName"
+      ></add-or-edit-lesson>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import AddOrEditSection from './components/addOrEditSection.vue'
+import CapterStatus from './components/capterStatus.vue'
+import AddOrEditLesson from './components/addOrEditLesson.vue'
 import { getSectionAndLesson, saveOrUpdateSection, saveOrUpdateLesson } from '@/services/course-section'
 import { getCourseInfoById } from '@/services/course'
 export default {
@@ -65,8 +105,20 @@ export default {
           // data是章节时，名字为secionName 否则为theme  --后台数据不一致导致
           return data.sectionName || data.theme
         }
-      }
+      },
+      dialogFormVisible: false,
+      dialogVisibleStatus: false,
+      dialogFormVisibleLesson: false,
+      isEdit: '',
+      isEditLesson: '',
+      lessonId: '',
+      sectionId: ''
     }
+  },
+  components: {
+    AddOrEditSection,
+    CapterStatus,
+    AddOrEditLesson
   },
   created () {
     this.loadSectionAndLesson()
@@ -75,7 +127,7 @@ export default {
   methods: {
     // 拖拽成功后的回调，向服务端发送数据
     async dropedSuccess (draggingNode, dropNode, type, event) {
-      console.log(dropNode, draggingNode)
+      // console.log(dropNode, draggingNode)
       this.isLoading = true
       // 如果课时或者章节过多，会导致大量同步任务出现，我们可以使用promise.all()方法让他们全部执行完再进入同步任务
       try {
@@ -128,6 +180,7 @@ export default {
     // 为了显示标题
     async loadCourseInfoById () {
       const { data } = await getCourseInfoById(this.courseId)
+      // console.log('课程信息', data)
       if (data.code === '000000') {
         this.editName = data.data.courseName
       }
@@ -135,7 +188,7 @@ export default {
     // 根据课程id获取章节和课时
     async loadSectionAndLesson () {
       const { data } = await getSectionAndLesson(this.courseId)
-      console.log(data)
+      // console.log('章节和课时', data)
       if (data.code === '000000') {
         this.sections = data.data
       }
@@ -144,13 +197,51 @@ export default {
     goBack () {
       this.$router.push({ name: 'course' })
     },
-    // 提交
-    async onSubmit () {
-
+    // 添加课时
+    addLesson () {
+      this.isEditLesson = false
+      this.dialogFormVisibleLesson = true
     },
-    handleNodeClick (data) {
-      // console.log(data)
-    }
+    // 编辑课时
+    editLesson (lessonId) {
+      this.isEditLesson = true
+      this.lessonId = lessonId
+      this.dialogFormVisibleLesson = true
+    },
+    // 章节状态
+    capterStatus (id) {
+      this.dialogVisibleStatus = true
+      this.sectionId = id
+    },
+    // 添加章节
+    addSection () {
+      this.isEdit = false
+      this.dialogFormVisible = true
+    },
+    // 编辑章节
+    editSection (id) {
+      this.isEdit = true
+      this.sectionId = id
+      this.dialogFormVisible = true
+    },
+    // 处理子组件传递过来的数据--章节
+    handleSuccess () {
+      this.dialogFormVisible = false
+      this.loadSectionAndLesson()
+    },
+    handleCancel () {
+      this.dialogFormVisible = false
+    },
+    // 处理子组件传递过来的数据--状态
+    handleSuccessStatus () {
+      this.dialogVisibleStatus = false
+      this.loadSectionAndLesson()
+    },
+    handleCancelStatus () {
+      this.dialogVisibleStatus = false
+    },
+    // node-click
+    handleNodeClick () {}
   }
 }
 </script>
