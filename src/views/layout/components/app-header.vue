@@ -3,7 +3,7 @@
       <!--左侧面包屑导航-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ address }}</el-breadcrumb-item>
     </el-breadcrumb>
       <!--右侧用户信息显示-->
     <el-dropdown>
@@ -33,7 +33,38 @@ export default {
   data () {
     return {
       // 用户信息
-      userInfo: {}
+      userInfo: {},
+      address: '课程管理'
+    }
+  },
+  watch: {
+    // 监听路由变化
+    $route () {
+      switch (this.$route.path) {
+        case '/role':
+          this.address = '角色管理'
+          break
+        case '/menu':
+          this.address = '菜单管理'
+          break
+        case '/resource':
+          this.address = '资源管理'
+          break
+        case '/course':
+          this.address = '课程管理'
+          break
+        case '/user':
+          this.address = '用户管理'
+          break
+        case '/advert':
+          this.address = '广告管理'
+          break
+        case '/advert-space':
+          this.address = '广告位管理'
+          break
+        default:
+          break
+      }
     }
   },
   methods: {
